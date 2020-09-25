@@ -1,5 +1,6 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MenuSystem
@@ -8,55 +9,30 @@ namespace MenuSystem
     {
         Level0,
         Level1,
-        Level2Plus 
-    }
-
-    public enum PredefinedUserChoices
-    {
-        X,
-        R,
-        M
+        Level2Plus
     }
 
     public class Menu
     {
-        public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+        private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
         private readonly MenuLevel _menuLevel;
+        private readonly string[] _predefinedActions = new[] {"M", "R", "X"};
+
         public Menu(MenuLevel level)
         {
             _menuLevel = level;
         }
-
-        public void InitializeMenuItems(Action returnToMainMenuAction, Action? returnToPreviousMenuAction, Action exitAction)
-        {
-            switch (_menuLevel)
-            {
-                case MenuLevel.Level1:
-                    MenuItems.Add(new MenuItem("Return to previous", "R", returnToMainMenuAction));
-                    break;
-                case MenuLevel.Level2Plus:
-                    MenuItems.Add(new MenuItem("Return to previous", "R", returnToPreviousMenuAction!));
-                    MenuItems.Add(new MenuItem("Return to main", "M", returnToMainMenuAction));
-                    break;
-                case MenuLevel.Level0:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            MenuItems.Add(new MenuItem("Exit", "X", exitAction));
-        }
-
+        
         public void AddNewMenuItem(MenuItem menuItem)
         {
             CheckMenuItemMinMaxLength(menuItem);
-            
-            if (MenuItems.All(m => m.UserChoice != menuItem.UserChoice) && 
-                !Enum.IsDefined(typeof(PredefinedUserChoices), menuItem.UserChoice))
+
+            if (!_predefinedActions.Contains(menuItem.UserChoice))
             {
-                MenuItems.Add(menuItem);
+                MenuItems.Add(menuItem.UserChoice, menuItem);
             }
-            else 
-            { 
+            else
+            {
                 throw new Exception($"A menu item with user choice '{menuItem.UserChoice}' already exists or is " +
                                     $"predefined.");
             }
@@ -75,7 +51,7 @@ namespace MenuSystem
             }
         }
 
-        public void RunMenu()
+        public string RunMenu()
         {
             var userChoice = "";
             do
@@ -84,30 +60,84 @@ namespace MenuSystem
 
                 foreach (var menuItem in MenuItems)
                 {
-                    Console.WriteLine(menuItem);
+                    Console.WriteLine(menuItem.Value);
                 }
-                
+
+                switch (_menuLevel)
+                {
+                    case MenuLevel.Level0:
+                        Console.WriteLine("X) Exit");
+                        break;
+                    case MenuLevel.Level1:
+                        Console.WriteLine("M) Return to main");
+                        Console.WriteLine("X) Exit");
+                        break;
+                    case MenuLevel.Level2Plus:
+                        Console.WriteLine("M) Return to main");
+                        Console.WriteLine("R) Return to previous");
+                        Console.WriteLine("X) Exit");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
                 Console.Write(">");
-                
+
                 userChoice = Console.ReadLine()?.ToUpper().Trim() ?? "";
 
-                var userMenuItem = MenuItems.FirstOrDefault(t => t.UserChoice == userChoice);
-                
-                if (userMenuItem != null)
+                if (!_predefinedActions.Contains(userChoice))
                 {
-                    if (userMenuItem.UserChoice == "X")
+                    if (MenuItems.TryGetValue(userChoice, out MenuItem userMenuItem))
                     {
-                        userMenuItem.MethodToExecute();
-                        break;
+                        userChoice = userMenuItem.MethodToExecute();
                     }
-                    userMenuItem.MethodToExecute();
+                    else
+                    {
+                        Console.WriteLine("I don't have this option!");
+                    }
                 }
-                else
+
+                if (userChoice == "X")
                 {
-                    Console.WriteLine("I don't have this option!");
+                    if (_menuLevel == MenuLevel.Level0)
+                    {
+                        SpinnerWithMessage("Closing down...");
+                    }
+                    break;
+                }
+
+                if (userChoice == "R" && _menuLevel == MenuLevel.Level2Plus)
+                {
+                    break;
+                }
+
+                if (userChoice == "M" && _menuLevel != MenuLevel.Level0)
+                {
+                    break;
                 }
                 
-            } while (userChoice != "X");
+            } while (true);
+
+            return userChoice;
+        }
+        
+        private void SpinnerWithMessage(string message)
+        {
+            ConsoleSpinner spin = new ConsoleSpinner();
+            Console.CursorVisible = false;
+            Console.Write(message);
+            
+            Stopwatch s = new Stopwatch();
+            
+            s.Start();
+            while (s.Elapsed < TimeSpan.FromSeconds(3)) 
+            {
+                spin.Turn();
+            }
+
+            Console.CursorVisible = true;
+            s.Stop();
+            Console.Clear();
         }
     }
 }
