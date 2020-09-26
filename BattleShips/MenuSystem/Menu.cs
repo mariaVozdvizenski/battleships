@@ -15,27 +15,26 @@ namespace MenuSystem
     public class Menu
     {
         private Dictionary<string, MenuItem> MenuItems { get; set; } = new Dictionary<string, MenuItem>();
+        private string[] PredefinedMenuItems { get; set; } = new[] {"X", "R", "M"};
         private readonly MenuLevel _menuLevel;
-        private readonly string[] _predefinedActions = new[] {"M", "R", "X"};
 
         public Menu(MenuLevel level)
         {
             _menuLevel = level;
+            AddPredefinedMenuItemsToDict();
+        }
+
+        private void AddPredefinedMenuItemsToDict()
+        {
+            MenuItems.Add("X", new MenuItem("Exit", "X", null, true));
+            MenuItems.Add("R", new MenuItem("Return to previous", "R", null, true));
+            MenuItems.Add("M", new MenuItem("Return to main", "M", null, true));
         }
         
         public void AddNewMenuItem(MenuItem menuItem)
         {
             CheckMenuItemMinMaxLength(menuItem);
-
-            if (!_predefinedActions.Contains(menuItem.UserChoice))
-            {
-                MenuItems.Add(menuItem.UserChoice, menuItem);
-            }
-            else
-            {
-                throw new Exception($"A menu item with user choice '{menuItem.UserChoice}' already exists or is " +
-                                    $"predefined.");
-            }
+            MenuItems.Add(menuItem.UserChoice, menuItem);
         }
 
         private static void CheckMenuItemMinMaxLength(MenuItem menuItem)
@@ -58,43 +57,27 @@ namespace MenuSystem
             {
                 Console.Write("");
 
-                foreach (var menuItem in MenuItems)
-                {
-                    Console.WriteLine(menuItem.Value);
-                }
-
-                switch (_menuLevel)
-                {
-                    case MenuLevel.Level0:
-                        Console.WriteLine("X) Exit");
-                        break;
-                    case MenuLevel.Level1:
-                        Console.WriteLine("M) Return to main");
-                        Console.WriteLine("X) Exit");
-                        break;
-                    case MenuLevel.Level2Plus:
-                        Console.WriteLine("M) Return to main");
-                        Console.WriteLine("R) Return to previous");
-                        Console.WriteLine("X) Exit");
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                DisplayCustomMenuItems();
+                DisplayPredefinedMenuItems();
 
                 Console.Write(">");
 
                 userChoice = Console.ReadLine()?.ToUpper().Trim() ?? "";
 
-                if (!_predefinedActions.Contains(userChoice))
+                if (!PredefinedMenuItems.Contains(userChoice))
                 {
-                    if (MenuItems.TryGetValue(userChoice, out MenuItem userMenuItem))
+                    if (MenuItems.TryGetValue(userChoice, out var userMenuItem))
                     {
-                        userChoice = userMenuItem.MethodToExecute();
+                        userChoice = userMenuItem.MethodToExecute!();
                     }
                     else
                     {
                         Console.WriteLine("I don't have this option!");
                     }
+                }
+                else
+                {
+                    DisplayErrorMessageBasedOnMenuLevel(userChoice);
                 }
 
                 if (userChoice == "X")
@@ -120,7 +103,68 @@ namespace MenuSystem
 
             return userChoice;
         }
-        
+
+        private void DisplayCustomMenuItems()
+        {
+            foreach (var menuItem in MenuItems)
+            {
+                if (!menuItem.Value.IsPredefined)
+                {
+                    Console.WriteLine(menuItem.Value);
+                }
+            }
+        }
+
+        private void DisplayErrorMessageBasedOnMenuLevel(string userChoice)
+        {
+            const string errorMessage = "Don't have this option!";
+
+            switch (_menuLevel)
+            {
+                case MenuLevel.Level0:
+                    if (userChoice != "X")
+                    {
+                        Console.WriteLine(errorMessage);
+                    }
+                    break;
+                case MenuLevel.Level1:
+                    if (userChoice != "X" && userChoice != "M")
+                    {
+                        Console.WriteLine(errorMessage);
+                    }
+                    break;
+                case MenuLevel.Level2Plus:
+                    if (userChoice != "X" && userChoice != "M" && userChoice != "R")
+                    {
+                        Console.WriteLine(errorMessage);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void DisplayPredefinedMenuItems()
+        {
+            switch (_menuLevel)
+            {
+                case MenuLevel.Level0:
+                    Console.WriteLine(MenuItems["X"]);
+                    break;
+                case MenuLevel.Level1:
+                    Console.WriteLine(MenuItems["M"]);
+                    Console.WriteLine(MenuItems["X"]);
+                    break;
+                case MenuLevel.Level2Plus:
+                    Console.WriteLine(MenuItems["R"]);
+                    Console.WriteLine(MenuItems["M"]);
+                    Console.WriteLine(MenuItems["X"]);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private void SpinnerWithMessage(string message)
         {
             ConsoleSpinner spin = new ConsoleSpinner();
