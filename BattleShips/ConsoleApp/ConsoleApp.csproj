@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\GameConsoleUI\GameConsoleUI.csproj" />
       <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
     </ItemGroup>
 

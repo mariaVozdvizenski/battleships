@@ -21,6 +21,9 @@
 **/.idea/**/contentModel.xml
 **/.idea/**/modules.xml
 
+# Ignore the project for testing purposes
+**/Testing
+
 *.suo
 *.user
 .vs/

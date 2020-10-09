@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace MenuSystem
 {
@@ -24,11 +25,23 @@ namespace MenuSystem
             AddPredefinedMenuItemsToDict();
         }
 
+        public bool MenuItemExists(string? input)
+        {
+            return input != null && MenuItems.ContainsKey(input);
+        }
+
         private void AddPredefinedMenuItemsToDict()
         {
             MenuItems.Add("X", new MenuItem("Exit", "X", null, true));
             MenuItems.Add("R", new MenuItem("Return to previous", "R", null, true));
             MenuItems.Add("M", new MenuItem("Return to main", "M", null, true));
+        }
+
+        public string[] GetPredefinedItems()
+        {
+            string[] copyArray = new string[PredefinedMenuItems.Length];
+            Array.Copy(PredefinedMenuItems, copyArray, PredefinedMenuItems.Length);
+            return copyArray;
         }
         
         public void AddNewMenuItem(MenuItem menuItem)
@@ -104,7 +117,7 @@ namespace MenuSystem
             return userChoice;
         }
 
-        private void DisplayCustomMenuItems()
+        public void DisplayCustomMenuItems()
         {
             foreach (var menuItem in MenuItems)
             {
@@ -144,7 +157,7 @@ namespace MenuSystem
             }
         }
 
-        private void DisplayPredefinedMenuItems()
+        public void DisplayPredefinedMenuItems()
         {
             switch (_menuLevel)
             {

@@ -10,6 +10,14 @@ ProjectSection(SolutionItems) = preProject
 	Directory.Build.props = Directory.Build.props
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEngine", "GameEngine\GameEngine.csproj", "{E6FDA3AC-3C6C-4817-A1EE-4BB9ECBC3A83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameConsoleUI", "GameConsoleUI\GameConsoleUI.csproj", "{8AD2D3CF-C3DD-4D7F-A0EB-C6707A994430}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{BCB93854-A7F0-419F-80CB-AB7EDE9A107B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{66674700-D671-4119-8550-F1B0C8777255}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +32,21 @@ Global
 		{A49307BA-31D2-4552-B4B7-6D40BBAFFE57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A49307BA-31D2-4552-B4B7-6D40BBAFFE57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A49307BA-31D2-4552-B4B7-6D40BBAFFE57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6FDA3AC-3C6C-4817-A1EE-4BB9ECBC3A83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6FDA3AC-3C6C-4817-A1EE-4BB9ECBC3A83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6FDA3AC-3C6C-4817-A1EE-4BB9ECBC3A83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6FDA3AC-3C6C-4817-A1EE-4BB9ECBC3A83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AD2D3CF-C3DD-4D7F-A0EB-C6707A994430}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AD2D3CF-C3DD-4D7F-A0EB-C6707A994430}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AD2D3CF-C3DD-4D7F-A0EB-C6707A994430}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AD2D3CF-C3DD-4D7F-A0EB-C6707A994430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCB93854-A7F0-419F-80CB-AB7EDE9A107B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCB93854-A7F0-419F-80CB-AB7EDE9A107B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCB93854-A7F0-419F-80CB-AB7EDE9A107B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCB93854-A7F0-419F-80CB-AB7EDE9A107B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66674700-D671-4119-8550-F1B0C8777255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66674700-D671-4119-8550-F1B0C8777255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66674700-D671-4119-8550-F1B0C8777255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66674700-D671-4119-8550-F1B0C8777255}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
