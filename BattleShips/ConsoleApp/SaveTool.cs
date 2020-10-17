@@ -9,7 +9,7 @@ namespace ConsoleApp
 {
     public class SaveTool
     {
-        private const string TextFile = "savegames.txt";
+        private const string TextFile = "C:/Users/maria/csharp2019fall/Proge/icd0008-2020f/BattleShips/ConsoleApp/bin/Debug/netcoreapp3.1/savegames.txt";
 
         public static void SaveGameToFile(BattleShipsSave battleShipSave)
         {

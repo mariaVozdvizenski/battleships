@@ -8,9 +8,26 @@ namespace GameConsoleUI
         private const string VerticalSeparator = "|";
         private const string HorizontalSeparator = "-";
         private const string CenterSeparator = "+";
-
+        
         public static void PrintBoard(BattleShips game)
         {
+            //char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+
+            for (int row = 0; row < game.Height; row++)
+            {
+                var topLine = "";
+                if (row == game.Height - 1)
+                {
+                    topLine += $" {row + 1} ";
+                }
+                else
+                {
+                    topLine += $" {row + 1} {VerticalSeparator}";
+                }
+                Console.Write(topLine);
+            }
+            Console.WriteLine();
+            
             for (int row = 0; row < game.Height; row++)
             {
                 var line = "";
@@ -25,7 +42,7 @@ namespace GameConsoleUI
                     }
                 }
                 
-                Console.WriteLine(line);
+                Console.WriteLine(line + $" {row + 1}");
 
                 if (row < game.Height - 1)
                 {

@@ -39,8 +39,8 @@ namespace GameEngine
                         Row = row
                     };
                     
-                    Player1.GameBoard.Add(panel1);
-                    Player2.GameBoard.Add(panel2);
+                    Player1.FiringBoard.Add(panel1);
+                    Player2.FiringBoard.Add(panel2);
                 }
             }
         }
@@ -49,10 +49,10 @@ namespace GameEngine
         {
             if (Player1Turn)
             {
-                return Player1.GameBoard.FirstOrDefault(e => e.Column == col && e.Row == row) 
+                return Player1.FiringBoard.FirstOrDefault(e => e.Column == col && e.Row == row) 
                     ?? throw new Exception("Panel not found!");
             }
-            return Player2.GameBoard.FirstOrDefault(e => e.Column == col && e.Row == row) 
+            return Player2.FiringBoard.FirstOrDefault(e => e.Column == col && e.Row == row) 
                    ?? throw new Exception("Panel not found!");
         }
 
