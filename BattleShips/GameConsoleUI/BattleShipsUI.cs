@@ -13,16 +13,23 @@ namespace GameConsoleUI
         {
             //char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
-            for (int row = 0; row < game.Height; row++)
+            for (int col = 0; col < game.Width; col++)
             {
                 var topLine = "";
-                if (row == game.Height - 1)
+                if (col == game.Width - 1)
                 {
-                    topLine += $" {row + 1} ";
+                    topLine += $" {col + 1} ";
                 }
                 else
                 {
-                    topLine += $" {row + 1} {VerticalSeparator}";
+                    if (col < 9)
+                    {
+                        topLine += $" {col + 1} {VerticalSeparator}";
+                    }
+                    else
+                    {
+                        topLine += $" {col + 1}{VerticalSeparator}";
+                    }
                 }
                 Console.Write(topLine);
             }
