@@ -6,7 +6,7 @@
         {
             Name = "Battleship";
             Width = 4;
-            PanelState = PanelState.Ship;
+            PanelState = PanelState.BattleShip;
         }
     }
 }

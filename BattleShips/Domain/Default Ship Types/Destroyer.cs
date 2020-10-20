@@ -6,7 +6,7 @@
         {
             Name = "Destroyer";
             Width = 2;
-            PanelState = PanelState.Ship;
+            PanelState = PanelState.Destroyer;
         }
     }
 }

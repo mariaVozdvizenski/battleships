@@ -6,7 +6,7 @@
         {
             Name = "Aircraft Carrier";
             Width = 5;
-            PanelState = PanelState.Ship;
+            PanelState = PanelState.Carrier;
         }
     }
 }

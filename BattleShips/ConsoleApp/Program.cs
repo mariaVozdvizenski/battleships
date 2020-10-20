@@ -125,10 +125,12 @@ namespace ConsoleApp
             Console.Clear();
             Console.WriteLine("Player 1 ships");
             SetUpPlayerShips(battleShips, player1, menu);
+            battleShips.PlaceShips(player1);
             
             Console.Clear();
             Console.WriteLine("Player 2 ships");
             SetUpPlayerShips(battleShips, player2, menu);
+            battleShips.PlaceShips(player2);
 
             var userChoice = "";
 
@@ -172,9 +174,13 @@ namespace ConsoleApp
             string? userChoice;
             bool userSaved;
 
+            Player currentPlayer;
+            
             do
             {
-                BattleShipsUI.PrintBoard(battleShips);
+                currentPlayer = battleShips.Player1Turn ? battleShips.Player1 : battleShips.Player2;
+                
+                BattleShipsUI.PrintBoard(battleShips, currentPlayer);
 
                 menu.DisplayCustomMenuItems();
                 menu.DisplayPredefinedMenuItems();
@@ -197,16 +203,15 @@ namespace ConsoleApp
                     (y, userChoice, userSaved) = AskForUserInput("Enter Y coordinate", battleShips.Height, 1, menu);
                     if (!userSaved) continue;
                     SaveGame(battleShips);
-                    BattleShipsUI.PrintBoard(battleShips);
+                    BattleShipsUI.PrintBoard(battleShips, currentPlayer);
                 } while (userSaved);
 
                 if (userChoice != null)
                 {
                     break;
                 }
-                
-                battleShips.FireAShot(x - 1, y - 1);
-                BattleShipsUI.PrintBoard(battleShips);
+                battleShips.FireAShot(currentPlayer, x - 1, y - 1);
+                BattleShipsUI.PrintBoard(battleShips, currentPlayer);
                 WaitForUserInput(battleShips.Player1Turn ? "Player2" : "Player1");
                 battleShips.Player1Turn = !battleShips.Player1Turn;
                 
