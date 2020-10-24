@@ -35,6 +35,12 @@ namespace ConsoleApp
                 menu.DisplayPredefinedMenuItems();
                 Console.WriteLine("-----------");
                 Console.WriteLine("Saved games");
+                if (saveGames.Count == 0)
+                {
+                    Console.WriteLine("No saves to load");
+                    WaitForUserInput("Press any key to return to main menu...");
+                    return "M";
+                }
                 foreach (var saveGame in saveGames)
                 {
                     Console.WriteLine(saveGame.SaveName);
@@ -78,6 +84,12 @@ namespace ConsoleApp
             
             Console.WriteLine("-----------");
             Console.WriteLine("Saved games");
+            if (saveGames.Count == 0)
+            {
+                Console.WriteLine("No saves to load");
+                WaitForUserInput("Press any key to return to main menu...");
+                return "M";
+            }
             foreach (var saveGame in saveGames)
             {
                 Console.WriteLine(saveGame.SaveName);
@@ -210,14 +222,38 @@ namespace ConsoleApp
                 {
                     break;
                 }
-                battleShips.FireAShot(currentPlayer, x - 1, y - 1);
+                
+                var shipHasBeenHit = battleShips.FireAShot(currentPlayer, x - 1, y - 1);
                 BattleShipsUI.PrintBoard(battleShips, currentPlayer);
-                WaitForUserInput(battleShips.Player1Turn ? "Player2" : "Player1");
+                DisplayShotResult(shipHasBeenHit);
+
+                if (battleShips.Player1.HasLost || battleShips.Player2.HasLost)
+                {
+                    var message = battleShips.Player1.HasLost ? "Player 2 has won the game!" : "Player 1 has won the game!";
+                    Console.WriteLine(message);
+                    WaitForUserInput("Press any key to quit the game");
+                    userChoice = "M";
+                    break;
+                }
+                
+                var turnMessage = battleShips.Player1Turn ? "Player2's turn, enter any key to continue..." 
+                    : "Player1's turn, enter any key to continue...";
+                WaitForUserInput(turnMessage);
                 battleShips.Player1Turn = !battleShips.Player1Turn;
                 
             } while (true);
 
             return userChoice;
+        }
+
+        private static void DisplayShotResult(bool shipHasBeenShot)
+        {
+            if (shipHasBeenShot)
+            {
+                Console.WriteLine("A ship has been hit!");
+                return;
+            }
+            Console.WriteLine("The shot missed!");
         }
 
         static string SaveGame(BattleShips game)
@@ -283,9 +319,9 @@ namespace ConsoleApp
             return userInput;
         }
         
-        private static void WaitForUserInput(string player)
+        private static void WaitForUserInput(string prompt)
         {
-            Console.WriteLine($"{player}'s turn, enter any key to continue...");
+            Console.WriteLine($"{prompt}");
             Console.Write(">");
             Console.ReadKey(); 
             Console.Clear();

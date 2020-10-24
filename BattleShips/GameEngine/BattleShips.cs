@@ -99,10 +99,36 @@ namespace GameEngine
                    ?? throw new Exception("Panel not found!");
         }
 
-        public void FireAShot(Player player, int col, int row)
+        public bool FireAShot(Player player, int col, int row)
         {
             var panel = GetPlayerFiringBoardPanel(player, col, row);
-            panel.HasBeenShot = true;
+            Panel playerGameBoardPanel;
+            if (Player1Turn)
+            {
+                 playerGameBoardPanel = GetPlayerGameBoardPanel(Player2, col, row);
+                 if (playerGameBoardPanel.IsOccupied)
+                 {
+                     panel.PanelState = PanelState.Hit;
+                     playerGameBoardPanel.PanelState = PanelState.Hit;
+                     var ship = Player2.Ships.FindShip(row, col);
+                     ship.Hits++;
+                     return true;
+                 }
+            }
+            else
+            {
+                playerGameBoardPanel = GetPlayerGameBoardPanel(Player1, col, row);
+                if (playerGameBoardPanel.IsOccupied)
+                {
+                    panel.PanelState = PanelState.Hit;
+                    playerGameBoardPanel.PanelState = PanelState.Hit;
+                    var ship = Player1.Ships.FindShip(row, col);
+                    ship.Hits++;
+                    return true;
+                }
+            }
+            panel.PanelState = PanelState.Miss;
+            return false;
         }
         
         public void PlaceShips(Player player)
@@ -123,26 +149,26 @@ namespace GameEngine
                     var endrow = startrow;
                     var endcolumn = startcolumn;
                     var orientation = rand.Next(1, 101) % 2; //0 for Horizontal
-
-                    List<int> panelNumbers = new List<int>();
                     
                     if (orientation == 0)
                     {
                         for (int i = 1; i < ship.Width; i++)
                         {
-                            endrow++;
+                            endcolumn++;
                         }
+                        ship.Orientation = ShipOrientation.Horizontal;
                     }
                     else
                     {
                         for (int i = 1; i < ship.Width; i++)
                         {
-                            endcolumn++;
+                            endrow++;
                         }
+                        ship.Orientation = ShipOrientation.Vertical;
                     }
 
                     //We cannot place ships beyond the boundaries of the board
-                    if (endrow > Height || endcolumn > Width)
+                    if (endrow > Height - 1 || endcolumn > Width - 1)
                     {
                         isOpen = true;
                         continue; //Restart the while loop to select a new random panel
@@ -150,16 +176,23 @@ namespace GameEngine
 
                     //Check if specified panels are occupied
                     var affectedPanels = player.GameBoard.Range(startrow, startcolumn, endrow, endcolumn);
+                    
                     if (affectedPanels.Any(x=>x.IsOccupied))
                     {
                         isOpen = true;
                         continue;
                     }
+                    
+                    ship.StartCol = startcolumn;
+                    ship.StartRow = startrow;
+                    ship.EndCol = endcolumn;
+                    ship.EndRow = endrow;
 
                     foreach (var panel in affectedPanels)
                     {
                         panel.PanelState = ship.PanelState;
                     }
+                    
                     isOpen = false;
                 }
             }

@@ -7,7 +7,7 @@ namespace Extensions
 {
     public static class PanelExtensions
     {
-        public static List<Panel> Range(this ICollection<Panel> panels, int startRow, int startColumn, int endRow, int endColumn)
+        public static List<Panel> Range(this IEnumerable<Panel> panels, int startRow, int startColumn, int endRow, int endColumn)
         {
             return panels.Where(x => x.Coordinates.Row >= startRow 
                                      && x.Coordinates.Column >= startColumn 

@@ -4,7 +4,7 @@ using GameEngine;
 
 namespace GameConsoleUI
 {
-    public class BattleShipsUI
+    public static class BattleShipsUI
     {
         private const string VerticalSeparator = "|";
         private const string HorizontalSeparator = "-";
@@ -14,7 +14,6 @@ namespace GameConsoleUI
         {
             //char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
             
-
             var topLine = "";
             for (int col = 0; col < game.Width; col++)
             {
@@ -50,7 +49,9 @@ namespace GameConsoleUI
 
             for (int col = 0; col < game.Width; col++)
             {
-                line = line + " " + GetSingleState(game.GetPlayerFiringBoardPanel(player, col, row)) + " ";
+                line = line + " " + game.GetPlayerFiringBoardPanel(player, col, row).Status + " ";
+
+                //line = line + " " + GetSingleState(game.GetPlayerFiringBoardPanel(player, col, row)) + " ";
                 
                 if (col < game.Width - 1)
                 {
@@ -118,7 +119,7 @@ namespace GameConsoleUI
 
         private static string GetSingleState(Panel panel)
         {
-            return panel.HasBeenShot ? "o" : " ";
+            return panel.HasBeenShot ? "X" : " ";
         }
     }
 }
