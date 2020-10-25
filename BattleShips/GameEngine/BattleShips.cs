@@ -131,7 +131,7 @@ namespace GameEngine
             return false;
         }
         
-        public void PlaceShips(Player player)
+        public void PlaceShipsAutomatically(Player player)
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
             foreach (var ship in player.Ships)

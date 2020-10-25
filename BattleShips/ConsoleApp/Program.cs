@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using DAL;
 using Domain;
+using Extensions;
 using GameConsoleUI;
 using GameEngine;
 using MenuSystem;
@@ -32,19 +34,7 @@ namespace ConsoleApp
             using (var ctx = new AppDbContext())
             {
                 var saveGames = ctx.BattleShipsSaves.ToList();
-                menu.DisplayPredefinedMenuItems();
-                Console.WriteLine("-----------");
-                Console.WriteLine("Saved games");
-                if (saveGames.Count == 0)
-                {
-                    Console.WriteLine("No saves to load");
-                    WaitForUserInput("Press any key to return to main menu...");
-                    return "M";
-                }
-                foreach (var saveGame in saveGames)
-                {
-                    Console.WriteLine(saveGame.SaveName);
-                }
+                if (DisplaySaveGames(menu, saveGames, out string quitToMenu)) return quitToMenu;
                 do
                 {
                     Console.WriteLine("Please enter the name of a save");
@@ -70,7 +60,6 @@ namespace ConsoleApp
                     }
                     Console.WriteLine("This save doesn't exist.");
                 } while (true);
-                
                 return userChoice;
             }
         }
@@ -80,20 +69,7 @@ namespace ConsoleApp
             var menu = new Menu(MenuLevel.Level1);
             Console.Clear();
             var saveGames = SaveTool.LoadGamesFromFile();
-            menu.DisplayPredefinedMenuItems();
-            
-            Console.WriteLine("-----------");
-            Console.WriteLine("Saved games");
-            if (saveGames.Count == 0)
-            {
-                Console.WriteLine("No saves to load");
-                WaitForUserInput("Press any key to return to main menu...");
-                return "M";
-            }
-            foreach (var saveGame in saveGames)
-            {
-                Console.WriteLine(saveGame.SaveName);
-            }
+            if (DisplaySaveGames(menu, saveGames, out string quitToMenu)) return quitToMenu;
             do
             {
                 Console.WriteLine("Please enter the name of a save");
@@ -121,6 +97,29 @@ namespace ConsoleApp
             return userChoice;
         }
 
+        private static bool DisplaySaveGames<T>(Menu menu, ICollection<T> saveGames, out string loadGameFromJson)
+        where T : BaseBattleShipsSave
+        {
+            menu.DisplayPredefinedMenuItems();
+            Console.WriteLine("-----------");
+            Console.WriteLine("Saved games");
+            if (saveGames.Count == 0)
+            {
+                Console.WriteLine("No saves to load");
+                WaitForUserInput("Press any key to return to main menu...");
+                {
+                    loadGameFromJson = "M";
+                    return true;
+                }
+            }
+            foreach (var saveGame in saveGames)
+            {
+                Console.WriteLine(saveGame.SaveName);
+            }
+            loadGameFromJson = "";
+            return false;
+        }
+
         static string HumanVsHumanNewGame()
         {
             var menu = new Menu(MenuLevel.Level1);
@@ -137,18 +136,116 @@ namespace ConsoleApp
             Console.Clear();
             Console.WriteLine("Player 1 ships");
             SetUpPlayerShips(battleShips, player1, menu);
-            battleShips.PlaceShips(player1);
-            
+            PlacePlayerShipsOnBoard(battleShips, player1, menu);
+
             Console.Clear();
             Console.WriteLine("Player 2 ships");
             SetUpPlayerShips(battleShips, player2, menu);
-            battleShips.PlaceShips(player2);
+            PlacePlayerShipsOnBoard(battleShips, player2, menu);
 
             var userChoice = "";
 
             userChoice = HumanVsHumanMainGame(battleShips, menu);
             
             return userChoice!;
+        }
+
+        private static void PlacePlayerShipsOnBoard(BattleShips battleShips, Player player, Menu menu)
+        {
+            string userShipPlacementChoice = "";
+            do
+            {
+                Console.WriteLine("Press 'R' for random placement or press 'C' to place the ships yourself.");
+                Console.Write(">");
+                userShipPlacementChoice = Console.ReadLine()?.Trim().ToUpper() ?? "R";
+            } while (userShipPlacementChoice != "R" && userShipPlacementChoice != "C");
+
+            if (userShipPlacementChoice == "R")
+            {
+                battleShips.PlaceShipsAutomatically(player);
+            }
+            else
+            {
+                int nrOfShipsLeft = player.Ships.Count;
+
+                foreach (var playerShip in player.Ships)
+                {
+                    BattleShipsUI.PrintBoard(battleShips, player);
+                    Console.WriteLine($"Nr. of ships left to place: {nrOfShipsLeft}");
+                    Console.WriteLine($"Ship width: {playerShip.Width}");
+                    var shipOrientation = "";
+                    do
+                    {
+                        Console.WriteLine("Ship orientation: Choose 'V' for vertical and 'H' for horizontal");
+                        Console.Write(">");
+                        shipOrientation = Console.ReadLine()?.Trim().ToUpper() ?? "V";
+                    } while (shipOrientation != "V" && shipOrientation != "H");
+
+                    Console.WriteLine($"Orientation: {shipOrientation}");
+                    do
+                    {
+                        int startRow;
+                        int startCol;
+
+                        (startRow, _, _) = AskForUserInput("Choose the starting row coordinate for your ship",
+                            battleShips.Height, 1, menu);
+                        (startCol, _, _) = AskForUserInput("Choose the starting column coordinate for your ship",
+                            battleShips.Width, 1, menu);
+
+                        startRow--;
+                        startCol--;
+
+                        int endRow = startRow;
+                        int endCol = startCol;
+
+                        if (shipOrientation == "H")
+                        {
+                            for (var i = 1; i < playerShip.Width; i++)
+                            {
+                                endCol++;
+                            }
+
+                            playerShip.Orientation = ShipOrientation.Horizontal;
+                        }
+                        else
+                        {
+                            for (var i = 1; i < playerShip.Width; i++)
+                            {
+                                endRow++;
+                            }
+
+                            playerShip.Orientation = ShipOrientation.Horizontal;
+                        }
+
+                        if (endRow > battleShips.Height - 1 || endCol > battleShips.Width - 1)
+                        {
+                            Console.WriteLine("Ship ending row/column coordinate is out of bounds! Please try again");
+                            continue;
+                        }
+
+                        var affectedPanels = player.GameBoard.Range(startRow, startCol, endRow, endCol);
+
+                        if (affectedPanels.Any(x => x.IsOccupied))
+                        {
+                            Console.WriteLine("A ship has already been placed here! Please try again");
+                            continue;
+                        }
+
+                        playerShip.StartCol = startCol;
+                        playerShip.StartRow = startRow;
+                        playerShip.EndCol = endCol;
+                        playerShip.EndRow = endRow;
+
+                        foreach (var panel in affectedPanels)
+                        {
+                            panel.PanelState = playerShip.PanelState;
+                        }
+
+                        nrOfShipsLeft--;
+                        break;
+                    } while (true);
+                }
+            }
         }
 
         private static void SetUpPlayerShips(BattleShips battleShips, Player player, Menu menu)
@@ -173,7 +270,7 @@ namespace ConsoleApp
                     Console.Write(">");
                     var shipName = Console.ReadLine()?.Trim().ToUpper() ?? "Default";
                     var (shipWidth, _, _) = AskForUserInput($"({player.Ships.Count + 1}) Enter ship width",
-                        battleShips.Width, 1, menu);
+                        battleShips.Width >= battleShips.Height ? battleShips.Width : battleShips.Height, 1, menu);
                     battleShips.AddShipToPlayerShipList(player, new Ship(){Name = shipName, Width = shipWidth});
                 } while (player.Ships.Count < 5);
             }
@@ -310,7 +407,7 @@ namespace ConsoleApp
                     if (userAnswer != null && userAnswer.Equals("Y"))
                     { 
                         SaveTool.DeleteGameFromFile(userInput);
-                       break; 
+                        break; 
                     }
                     continue;
                 }
@@ -325,12 +422,6 @@ namespace ConsoleApp
             Console.Write(">");
             Console.ReadKey(); 
             Console.Clear();
-        }
-        
-        static string DefaultMenuAction()
-        {
-            Console.WriteLine("Not implemented yet!");
-            return "";
         }
         
         private static (int, string?, bool) AskForUserInput(string prompt, int max, int min, Menu menu)
