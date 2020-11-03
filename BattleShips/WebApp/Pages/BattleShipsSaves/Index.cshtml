@@ -1,0 +1,66 @@
+@page
+@model WebApp.Pages_BattleShipsSaves.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.BattleShipsSave[0].Player1JsonString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BattleShipsSave[0].Player2JsonString)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BattleShipsSave[0].SaveName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BattleShipsSave[0].Height)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BattleShipsSave[0].Width)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BattleShipsSave[0].Player1Turn)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.BattleShipsSave) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Player1JsonString)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Player2JsonString)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SaveName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Height)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Width)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Player1Turn)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

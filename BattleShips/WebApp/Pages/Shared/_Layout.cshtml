@@ -24,6 +24,9 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-page="/SavedGames">Load Game</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-page="/BattleShipsSaves/Index">BattleShipsSaves</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -45,6 +48,7 @@
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
 
-@RenderSection("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

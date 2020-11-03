@@ -1,0 +1,55 @@
+@page
+@model WebApp.Pages_BattleShipsSaves.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BattleShipsSave</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BattleShipsSave.Player1JsonString)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BattleShipsSave.Player1JsonString)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BattleShipsSave.Player2JsonString)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BattleShipsSave.Player2JsonString)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BattleShipsSave.SaveName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BattleShipsSave.SaveName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BattleShipsSave.Height)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BattleShipsSave.Height)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BattleShipsSave.Width)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BattleShipsSave.Width)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BattleShipsSave.Player1Turn)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.BattleShipsSave.Player1Turn)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.BattleShipsSave.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

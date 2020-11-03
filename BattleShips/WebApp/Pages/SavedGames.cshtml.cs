@@ -9,7 +9,7 @@ namespace WebApp.Pages
 {
     public class SavedGames : PageModel
     {
-        private AppDbContext _context;
+        private readonly AppDbContext _context;
         public ICollection<BattleShipsSave> BattleShipsSaves { get; set; } = default!;
         
         public SavedGames(AppDbContext context)

@@ -1,0 +1,34 @@
+﻿@page
+@model WebApp.Pages.NewGameHuman
+
+<div class="text-center">
+    <h2>New Game</h2>
+    <form method="post">
+        <div>
+            <h1 class="display-4">Choose board dimensions</h1>
+            <br/>
+        </div>
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-row">
+            <div class="col">
+                <input asp-for="Height" class="form-control" placeholder="Height" required>
+                <span asp-validation-for="Height" class="text-danger"></span>
+            </div>
+            <div class="col">
+                <input asp-for="Width" class="form-control" placeholder="Width" required>
+                <span asp-validation-for="Width" class="text-danger"></span>
+            </div>
+        </div>    
+        <div class="form-group">
+            <br/>
+            <div class="form-row">
+                <input asp-for="GameName" class="form-control" placeholder="Game name" required>
+                <span asp-validation-for="GameName" class="text-danger">
+                </span>
+            </div>
+        </div>
+
+        <br/>
+        <button type="submit" class="btn btn-outline-success btn-block">Start</button>
+    </form>
+</div>
