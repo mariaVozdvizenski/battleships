@@ -1,0 +1,13 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container text-center">
+    <h1 class="display-4">Welcome to Battleships!</h1>
+    <div class="list-group">
+        <a role="button"  class="list-group-item list-group-item-action btn btn-outline-primary">New Game: Human vs Human</a>
+        <a role="button" class="list-group-item list-group-item-action btn btn-outline-primary" asp-page="/SavedGames">Load Game</a>
+    </div>
+</div>

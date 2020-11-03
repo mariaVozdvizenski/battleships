@@ -1,0 +1,12 @@
+﻿@page
+@model WebApp.Pages.SavedGames
+
+@{
+    ViewData["Title"] = "Load game";
+}
+
+<h1>Load Game</h1>
+@foreach (var save in Model.BattleShipsSaves)
+{
+    <p>@save.SaveName</p>
+}

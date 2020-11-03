@@ -132,7 +132,16 @@ namespace ConsoleApp
             Player player2 = new Player();
 
             BattleShips battleShips = new BattleShips(height, width, player1, player2);
+
+            Console.WriteLine("Enter 'T' if the ships can touch. Enter any other symbol if not.");
+            Console.Write(">");
+            var touchRules = Console.ReadLine()?.Trim().ToUpper() ?? "E";
             
+            if (touchRules != "T")
+            {
+                battleShips.ShipsCanTouch = false;
+            }
+
             Console.Clear();
             Console.WriteLine("Player 1 ships");
             SetUpPlayerShips(battleShips, player1, menu);
@@ -222,12 +231,27 @@ namespace ConsoleApp
                             Console.WriteLine("Ship ending row/column coordinate is out of bounds! Please try again");
                             continue;
                         }
+                        
+                        List<Panel> affectedPanels = new List<Panel>();
 
-                        var affectedPanels = player.GameBoard.Range(startRow, startCol, endRow, endCol);
-
+                        if (!battleShips.ShipsCanTouch)
+                        {
+                            var orientation = shipOrientation == "H" ? 0 : 1;
+                            battleShips.FindAffectedPanelsAroundTheShip(player, orientation, affectedPanels, startRow, startCol, endRow, endCol);
+                        }
+                        else
+                        {
+                            affectedPanels.AddRange(player.GameBoard.Range(startRow, startCol, endRow, endCol));
+                        }
+                        
+                        var shipPlacementPanels = player.GameBoard.Range(startRow, startCol, endRow, endCol);
+                        
                         if (affectedPanels.Any(x => x.IsOccupied))
                         {
-                            Console.WriteLine("A ship has already been placed here! Please try again");
+                            var message = "A ship has already been placed here!";
+                            Console.WriteLine(!battleShips.ShipsCanTouch
+                                ? $"{message} Also the ships cannot touch! Please try again"
+                                : $"{message} Please try again");
                             continue;
                         }
 
@@ -236,11 +260,10 @@ namespace ConsoleApp
                         playerShip.EndCol = endCol;
                         playerShip.EndRow = endRow;
 
-                        foreach (var panel in affectedPanels)
+                        foreach (var panel in shipPlacementPanels)
                         {
                             panel.PanelState = playerShip.PanelState;
                         }
-
                         nrOfShipsLeft--;
                         break;
                     } while (true);

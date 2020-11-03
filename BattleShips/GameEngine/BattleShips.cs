@@ -15,6 +15,7 @@ namespace GameEngine
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
         public bool Player1Turn { get; set; } = true;
+        public bool ShipsCanTouch { get; set; } = true;
 
         
         public BattleShips(int height, int width, Player player1, Player player2, bool fromSavedGame = false)
@@ -175,8 +176,19 @@ namespace GameEngine
                     }
 
                     //Check if specified panels are occupied
-                    var affectedPanels = player.GameBoard.Range(startrow, startcolumn, endrow, endcolumn);
+                    List<Panel> affectedPanels = new List<Panel>();
+
+                    if (ShipsCanTouch == false)
+                    {
+                        FindAffectedPanelsAroundTheShip(player, orientation, affectedPanels, startrow, startcolumn, endrow, endcolumn);
+                    }
+                    else
+                    {
+                        affectedPanels.AddRange(player.GameBoard.Range(startrow, startcolumn, endrow, endcolumn));
+                    }
                     
+                    List<Panel> shipPlacementPanels = player.GameBoard.Range(startrow, startcolumn, endrow, endcolumn);
+
                     if (affectedPanels.Any(x=>x.IsOccupied))
                     {
                         isOpen = true;
@@ -188,13 +200,30 @@ namespace GameEngine
                     ship.EndCol = endcolumn;
                     ship.EndRow = endrow;
 
-                    foreach (var panel in affectedPanels)
+                    foreach (var panel in shipPlacementPanels)
                     {
                         panel.PanelState = ship.PanelState;
                     }
                     
                     isOpen = false;
                 }
+            }
+        }
+
+        public void FindAffectedPanelsAroundTheShip(Player player, int orientation, List<Panel> affectedPanels, int startrow,
+            int startcolumn, int endrow, int endcolumn)
+        {
+            if (orientation == 0) // horizontal
+            {
+                affectedPanels.AddRange(player.GameBoard.Range(startrow - 1, startcolumn, endrow - 1, endcolumn));
+                affectedPanels.AddRange(player.GameBoard.Range(startrow, startcolumn - 1, endrow, endcolumn + 1));
+                affectedPanels.AddRange(player.GameBoard.Range(startrow + 1, startcolumn, endrow + 1, endcolumn));
+            }
+            else // vertical
+            {
+                affectedPanels.AddRange(player.GameBoard.Range(startrow, startcolumn + 1, endrow, endcolumn + 1));
+                affectedPanels.AddRange(player.GameBoard.Range(startrow - 1, startcolumn, endrow + 1, endcolumn));
+                affectedPanels.AddRange(player.GameBoard.Range(startrow, startcolumn - 1, endrow, endcolumn - 1));
             }
         }
 
