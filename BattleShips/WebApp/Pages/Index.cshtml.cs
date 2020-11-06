@@ -20,5 +20,10 @@ namespace WebApp.Pages
         public void OnGet()
         {
         }
+        
+        public void OnPost(int num)
+        {
+            Console.WriteLine(num);
+        }
     }
 }

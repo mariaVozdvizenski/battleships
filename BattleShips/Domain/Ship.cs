@@ -1,4 +1,5 @@
-﻿using GameEngine;
+﻿using System.ComponentModel.DataAnnotations;
+using GameEngine;
 
 namespace Domain
 {
@@ -10,6 +11,7 @@ namespace Domain
         public int EndCol { get; set; }
         public ShipOrientation Orientation { get; set; }
         public string Name { get; set; } = null!;
+        [Range(1, 5)]
         public int Width { get; set; }
         public int Hits { get; set; }
         public bool IsSunk => Hits >= Width;

@@ -1,0 +1,129 @@
+﻿@page
+@using Domain
+@model WebApp.Pages.PlayGame
+
+@{
+    ViewData["Title"] = "Play Game";
+}
+
+<div>
+    <h3 class="text-center">BattleShips</h3>
+    @if (Model.BattleShips.Player1.HasLost)
+    {
+        <h2 class="text-center">Player 2 has won! Congrats</h2>
+    }
+    else if (Model.BattleShips.Player2.HasLost)
+    {
+        <h2 class="text-center">Player 1 has won! Congrats</h2>
+    }
+    @if (Model.BattleShips.Player1Turn && !Model.BattleShips.GameFinished)
+    {
+        <h2 class="text-center">Player 1 Turn</h2>
+    }
+    else if (!Model.BattleShips.Player1Turn && !Model.BattleShips.GameFinished)
+    {
+        <h2 class="text-center">Player 2 Turn</h2>
+    }
+    @if (Model.HideBoards == false)
+    {
+       <div class="container text-center">
+        <form method="post">
+            <table class="center bordered">
+                <tr class="text-center">
+                    @for (var col = 0; col < Model.BattleShips.Width; col++)
+                    {
+                        <td class="coordinates">@Model.Alphabet[col]</td>
+                    }
+                </tr>
+                @for (var row = 0; row < Model.BattleShips.Height; row++)
+                {
+                    <tr class="text-center">
+                        @for (var col = 0; col < Model.BattleShips.Width; col++)
+                        {
+                            if (Model.BattleShips.Player1Turn)
+                            {
+                                if (Model.BattleShips.GetPlayerFiringBoardPanel(Model.BattleShips.Player1, col, row).PanelState == PanelState.Miss)
+                                {
+                                    <td>M</td>
+                                }
+                                else if (Model.BattleShips.GetPlayerFiringBoardPanel(Model.BattleShips.Player1, col, row).PanelState == PanelState.Hit)
+                                {
+                                    <td>X</td>
+                                }
+                                else
+                                {
+                                    <td><input type="radio" asp-for="CoordinateString" value="@row,@col" required></td>
+                                }
+                            }
+                            else
+                            {
+                                if (Model.BattleShips.GetPlayerFiringBoardPanel(Model.BattleShips.Player2, col, row).PanelState == PanelState.Miss)
+                                {
+                                    <td>M</td>
+                                }
+                                else if (Model.BattleShips.GetPlayerFiringBoardPanel(Model.BattleShips.Player2, col, row).PanelState == PanelState.Hit)
+                                {
+                                    <td>X</td>
+                                }
+                                else
+                                {
+                                    <td><input type="radio" asp-for="CoordinateString" value="@row,@col" required></td>
+                                }
+                            }
+                        }
+                        <td class="coordinates">@(row + 1)</td>
+                    </tr>
+                }
+            </table>
+            <div class="btn-group">
+                @if (Model.BattleShips.GameFinished)
+                {
+                    <button class="btn btn-danger" type="submit" disabled>Fire!</button>
+                }
+                else
+                {
+                    <button class="btn btn-danger" type="submit">Fire!</button>
+                }
+                <a asp-page="PlayGame" class="btn btn-primary" asp-route-id="@Model.Id">Hide Boards</a>
+            </div>
+        </form>
+    </div>
+        <div class="container">
+            <table class="center bordered">
+                <tr class="text-center">
+                    @for (var col = 0; col < Model.BattleShips.Width; col++)
+                    {
+                        <td class="coordinates">@Model.Alphabet[col]</td>
+                    }
+                </tr>
+                @for (var row = 0; row < Model.BattleShips.Height; row++)
+                {
+                    <tr class="text-center">
+                        @for (var col = 0; col < Model.BattleShips.Width; col++)
+                        {
+                            if (Model.BattleShips.Player1Turn)
+                            {
+                                <td>@Model.GetPanelState(Model.BattleShips.GetPlayerGameBoardPanel(Model.BattleShips.Player1, col, row))</td>
+                            }
+                            else
+                            {
+                                <td>@Model.GetPanelState(Model.BattleShips.GetPlayerGameBoardPanel(Model.BattleShips.Player2, col, row))</td>
+                            }
+                        }
+                        <td class="coordinates">@(row + 1)</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+    else
+    {
+        <p><a asp-page-handler="ShowBoards" class="btn btn-primary btn-lg btn-block" asp-route-id="@Model.Id">Show Boards</a></p>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

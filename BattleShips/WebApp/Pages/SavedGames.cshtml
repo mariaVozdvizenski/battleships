@@ -1,4 +1,6 @@
 ﻿@page
+@using System.Security.Cryptography.X509Certificates
+@using Domain
 @model WebApp.Pages.SavedGames
 
 @{
@@ -9,5 +11,6 @@
 
 @foreach (var save in Model.BattleShipsSaves)
 {
-    <p>@save.SaveName</p>
+    <a asp-page="/PlayGame" asp-route-id="@save.Id"><p>@save.SaveName</p></a>
 }
+

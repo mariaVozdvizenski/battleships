@@ -1,5 +1,5 @@
 ﻿@page
-@model WebApp.Pages.NewGameHuman
+@model WebApp.Pages.NewGameHumanCustom
 
 @{
     ViewData["Title"] = "New game";
@@ -33,9 +33,38 @@
         </div>
         
         <div>
+            <h1 class="display-4">Create custom ships</h1>
+        </div>
+        
+        <div class="form-row">
+            <div class="col">
+                <h3>Player 1 Ships</h3>
+            </div>
+
+            @for (var i = 0; i < 5; i++)
+            {
+                <div class="col">
+                    <input asp-for="Player1Ships[i].Name" placeholder="Ship name">
+                    <input asp-for="Player1Ships[i].Width" placeholder="Ship width">
+                </div>
+            }
+        </div>
+        
+        <div class="form-row">
+            <div class="col">
+                <h3>Player 2 Ships</h3>
+            </div>
+            @for (var i = 0; i < 5; i++)
+            {
+                <div class="col">
+                    <input asp-for="Player2Ships[i].Name" placeholder="Ship name">
+                    <input asp-for="Player2Ships[i].Width" placeholder="Ship width">
+                </div>
+            }
+        </div>
+        <div>
             <h1 class="display-4">Additional options</h1>
         </div>
-
         <label asp-for="ShipsCanTouch" class="control-label"></label>
         <input asp-for="ShipsCanTouch">
         <button type="submit" class="btn btn-outline-success btn-block">Start</button>

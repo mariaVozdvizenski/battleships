@@ -16,7 +16,18 @@ namespace GameEngine
         public Player Player2 { get; set; }
         public bool Player1Turn { get; set; } = true;
         public bool ShipsCanTouch { get; set; } = true;
+        public bool GameFinished { get; set; } = false;
 
+        public BattleShips(int height, int width, string player1Json, string player2Json)
+        {
+            var player1 = JsonSerializer.Deserialize<Player>(player1Json);
+            var player2 = JsonSerializer.Deserialize<Player>(player2Json);
+            
+            Height = height;
+            Width = width;
+            Player1 = player1;
+            Player2 = player2;
+        }
         
         public BattleShips(int height, int width, Player player1, Player player2, bool fromSavedGame = false)
         {
@@ -39,6 +50,25 @@ namespace GameEngine
                 Height = Height, Player1JsonString = player1Json, Player2JsonString = player2Json,
                 Width = Width, Player1Turn = Player1Turn, SaveName = saveName
             };
+        }
+
+        public void UpdateBattleShipsSave(BattleShipsSave save)
+        {
+            string player1Json = JsonSerializer.Serialize(Player1);
+            string player2Json = JsonSerializer.Serialize(Player2);
+            
+            save.Player1JsonString = player1Json;
+            save.Player2JsonString = player2Json;
+
+            save.Player1Turn = Player1Turn;
+        }
+
+        public void CheckIfGameHasFinished()
+        {
+            if (Player1.HasLost || Player2.HasLost)
+            {
+                GameFinished = true;
+            }
         }
 
         private void InitializeGameBoards()
@@ -131,7 +161,7 @@ namespace GameEngine
             panel.PanelState = PanelState.Miss;
             return false;
         }
-        
+
         public void PlaceShipsAutomatically(Player player)
         {
             Random rand = new Random(Guid.NewGuid().GetHashCode());
