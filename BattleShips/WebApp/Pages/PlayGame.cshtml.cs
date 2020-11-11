@@ -16,7 +16,6 @@ namespace WebApp.Pages
     public class PlayGame : PageModel
     {
         private readonly AppDbContext _appDbContext;
-
         public int Id { get; set; }
         public BattleShips BattleShips { get; set; } = default!;
         
@@ -24,7 +23,6 @@ namespace WebApp.Pages
         [Required]
         public string CoordinateString { get; set; } = default!;
         public bool HideBoards { get; set; } = false;
-        
         public char[] Alphabet { get; set; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
         
         public PlayGame(AppDbContext appDbContext)
@@ -36,10 +34,7 @@ namespace WebApp.Pages
         {
             var battleShipsSave = await _appDbContext.BattleShipsSaves.FirstOrDefaultAsync(e => e.Id == id);
             Id = id;
-            BattleShips = new BattleShips(battleShipsSave!.Height, battleShipsSave.Width,
-                battleShipsSave.Player1JsonString,
-                battleShipsSave.Player2JsonString) 
-                {Player1Turn = battleShipsSave.Player1Turn};
+            BattleShips = new BattleShips(battleShipsSave);
             HideBoards = true;
             BattleShips.CheckIfGameHasFinished();
         }
@@ -53,11 +48,8 @@ namespace WebApp.Pages
             var (row, col) = await ParseCoordinatesAsync();
             
             var battleShipsSave = await _appDbContext.BattleShipsSaves.FirstOrDefaultAsync(e => e.Id == id);
-            
-            BattleShips = new BattleShips(battleShipsSave!.Height, battleShipsSave.Width,
-                    battleShipsSave.Player1JsonString,
-                    battleShipsSave.Player2JsonString) 
-                {Player1Turn = battleShipsSave.Player1Turn};
+
+            BattleShips = new BattleShips(battleShipsSave);
             
             BattleShips.FireAShot(BattleShips.Player1Turn ? BattleShips.Player1 : BattleShips.Player2, col, row);
             BattleShips.Player1Turn = !BattleShips.Player1Turn;
@@ -71,10 +63,7 @@ namespace WebApp.Pages
         public async Task OnGetShowBoardsAsync(int id)
         {
             var battleShipsSave = await _appDbContext.BattleShipsSaves.FirstOrDefaultAsync(e => e.Id == id);
-            BattleShips = new BattleShips(battleShipsSave!.Height, battleShipsSave.Width,
-                    battleShipsSave.Player1JsonString,
-                    battleShipsSave.Player2JsonString)
-                {Player1Turn = battleShipsSave.Player1Turn};
+            BattleShips = new BattleShips(battleShipsSave);
             Id = id;
             BattleShips.CheckIfGameHasFinished();
         }

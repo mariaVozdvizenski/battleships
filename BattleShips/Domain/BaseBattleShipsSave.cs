@@ -17,5 +17,7 @@ namespace Domain
         public int Width { get; set; }
         
         public bool Player1Turn { get; set; }
+
+        public GameType GameType { get; set; }
     }
 }

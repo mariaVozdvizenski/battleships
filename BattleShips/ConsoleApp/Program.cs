@@ -18,12 +18,52 @@ namespace ConsoleApp
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
 
             Console.WriteLine("==========> BATTLESHIPS <================");
-            
+
             var menu = new Menu(MenuLevel.Level0);
             menu.AddNewMenuItem(new MenuItem("New game human vs human", "1", HumanVsHumanNewGame));
-            menu.AddNewMenuItem(new MenuItem("Load Game from Json", "2", LoadGameFromJson));
-            menu.AddNewMenuItem(new MenuItem("Load Game from Db", "3", LoadGameFromDb));
+            menu.AddNewMenuItem(new MenuItem("New game human vs AI", "2", HumanVsAiNewGame));
+            menu.AddNewMenuItem(new MenuItem("Load Game from Json", "3", LoadGameFromJson));
+            menu.AddNewMenuItem(new MenuItem("Load Game from Db", "4", LoadGameFromDb));
             menu.RunMenu();
+        }
+
+        private static string HumanVsAiNewGame()
+        {
+            var menu = new Menu(MenuLevel.Level1);
+            menu.AddNewMenuItem(new MenuItem("Save game", "S", null));
+
+            (int height, _, _) = AskForUserInput("Please enter the board height", 20, 10, menu);
+            (int width, _, _) = AskForUserInput("Please enter the board width", 20, 10, menu);
+
+            Player player1 = new Player();
+            Player player2 = new Player();
+
+            BattleShips battleShips = new BattleShips(height, width, player1, player2);
+
+            Console.WriteLine("Enter 'T' if the ships can touch. Enter any other symbol if not.");
+            Console.Write(">");
+            var touchRules = Console.ReadLine()?.Trim().ToUpper() ?? "E";
+
+            if (touchRules != "T")
+            {
+                battleShips.ShipsCanTouch = false;
+            }
+
+            Console.Clear();
+            Console.WriteLine("Player 1 ships");
+            SetUpPlayerShips(battleShips, player1, menu);
+            PlacePlayerShipsOnBoard(battleShips, player1, menu);
+
+            Console.Clear();
+            battleShips.AddDefaultShipsToPlayerShipList(player2);
+            battleShips.PlaceShipsAutomatically(player2);
+            battleShips.GameType = GameType.HumanVsAi;
+
+            var userChoice = "";
+
+            userChoice = HumanVsHumanMainGame(battleShips, menu);
+
+            return userChoice!;
         }
 
         private static string LoadGameFromDb()
@@ -44,25 +84,26 @@ namespace ConsoleApp
                     {
                         break;
                     }
+
                     Console.WriteLine(userInput);
                     if (saveGames.Any(e => e.SaveName.Equals(userInput)))
                     {
                         var battleShipsSave = saveGames.First(e => e.SaveName.Equals(userInput));
-                        var player1 = JsonSerializer.Deserialize<Player>(battleShipsSave.Player1JsonString);
-                        var player2 = JsonSerializer.Deserialize<Player>(battleShipsSave.Player2JsonString);
-                        var battleShipsGame = new BattleShips(battleShipsSave.Height, battleShipsSave.Width, player1,
-                            player2, true) {Player1Turn = battleShipsSave.Player1Turn};
-                    
+                        var battleShipsGame = new BattleShips(battleShipsSave);
+
                         menu.AddNewMenuItem(new MenuItem("Save game", "S", null));
-                    
+
                         userChoice = HumanVsHumanMainGame(battleShipsGame, menu);
                         break;
                     }
+
                     Console.WriteLine("This save doesn't exist.");
                 } while (true);
+
                 return userChoice;
             }
         }
+
         private static string LoadGameFromJson()
         {
             var userChoice = "";
@@ -79,26 +120,27 @@ namespace ConsoleApp
                 {
                     break;
                 }
+
                 Console.WriteLine(userInput);
                 if (saveGames.Any(e => e.SaveName.Equals(userInput)))
                 {
                     var battleShipsSave = saveGames.First(e => e.SaveName.Equals(userInput));
-                    var battleShipsGame = new BattleShips(battleShipsSave.Height, battleShipsSave.Width,
-                        battleShipsSave.Player1!,
-                        battleShipsSave.Player2!, true) {Player1Turn = battleShipsSave.Player1Turn};
-                    
+                    var battleShipsGame = new BattleShips(battleShipsSave);
+
                     menu.AddNewMenuItem(new MenuItem("Save game", "S", null));
-                    
+
                     userChoice = HumanVsHumanMainGame(battleShipsGame, menu);
                     break;
                 }
+
                 Console.WriteLine("This save doesn't exist.");
             } while (true);
+
             return userChoice;
         }
 
         private static bool DisplaySaveGames<T>(Menu menu, ICollection<T> saveGames, out string loadGameFromJson)
-        where T : BaseBattleShipsSave
+            where T : BaseBattleShipsSave
         {
             menu.DisplayPredefinedMenuItems();
             Console.WriteLine("-----------");
@@ -112,10 +154,12 @@ namespace ConsoleApp
                     return true;
                 }
             }
+
             foreach (var saveGame in saveGames)
             {
                 Console.WriteLine(saveGame.SaveName);
             }
+
             loadGameFromJson = "";
             return false;
         }
@@ -124,10 +168,10 @@ namespace ConsoleApp
         {
             var menu = new Menu(MenuLevel.Level1);
             menu.AddNewMenuItem(new MenuItem("Save game", "S", null));
-            
+
             (int height, _, _) = AskForUserInput("Please enter the board height", 20, 10, menu);
             (int width, _, _) = AskForUserInput("Please enter the board width", 20, 10, menu);
-            
+
             Player player1 = new Player();
             Player player2 = new Player();
 
@@ -136,7 +180,7 @@ namespace ConsoleApp
             Console.WriteLine("Enter 'T' if the ships can touch. Enter any other symbol if not.");
             Console.Write(">");
             var touchRules = Console.ReadLine()?.Trim().ToUpper() ?? "E";
-            
+
             if (touchRules != "T")
             {
                 battleShips.ShipsCanTouch = false;
@@ -155,7 +199,7 @@ namespace ConsoleApp
             var userChoice = "";
 
             userChoice = HumanVsHumanMainGame(battleShips, menu);
-            
+
             return userChoice!;
         }
 
@@ -231,21 +275,22 @@ namespace ConsoleApp
                             Console.WriteLine("Ship ending row/column coordinate is out of bounds! Please try again");
                             continue;
                         }
-                        
+
                         List<Panel> affectedPanels = new List<Panel>();
 
                         if (!battleShips.ShipsCanTouch)
                         {
                             var orientation = shipOrientation == "H" ? 0 : 1;
-                            battleShips.FindAffectedPanelsAroundTheShip(player, orientation, affectedPanels, startRow, startCol, endRow, endCol);
+                            battleShips.FindAffectedPanelsAroundTheShip(player, orientation, affectedPanels, startRow,
+                                startCol, endRow, endCol);
                         }
                         else
                         {
                             affectedPanels.AddRange(player.GameBoard.Range(startRow, startCol, endRow, endCol));
                         }
-                        
+
                         var shipPlacementPanels = player.GameBoard.Range(startRow, startCol, endRow, endCol);
-                        
+
                         if (affectedPanels.Any(x => x.IsOccupied))
                         {
                             var message = "A ship has already been placed here!";
@@ -264,6 +309,7 @@ namespace ConsoleApp
                         {
                             panel.PanelState = playerShip.PanelState;
                         }
+
                         nrOfShipsLeft--;
                         break;
                     } while (true);
@@ -294,7 +340,7 @@ namespace ConsoleApp
                     var shipName = Console.ReadLine()?.Trim().ToUpper() ?? "Default";
                     var (shipWidth, _, _) = AskForUserInput($"({player.Ships.Count + 1}) Enter ship width",
                         battleShips.Width >= battleShips.Height ? battleShips.Width : battleShips.Height, 1, menu);
-                    battleShips.AddShipToPlayerShipList(player, new Ship(){Name = shipName, Width = shipWidth});
+                    battleShips.AddShipToPlayerShipList(player, new Ship() {Name = shipName, Width = shipWidth});
                 } while (player.Ships.Count < 5);
             }
         }
@@ -307,11 +353,11 @@ namespace ConsoleApp
             bool userSaved;
 
             Player currentPlayer;
-            
+
             do
             {
                 currentPlayer = battleShips.Player1Turn ? battleShips.Player1 : battleShips.Player2;
-                
+
                 BattleShipsUI.PrintBoard(battleShips, currentPlayer);
 
                 menu.DisplayCustomMenuItems();
@@ -319,48 +365,61 @@ namespace ConsoleApp
 
                 Console.WriteLine(battleShips.Player1Turn ? "Player 1's turn" : "Player 2's turn");
 
-                (x, userChoice, userSaved) = AskForUserInput("Enter X coordinate", battleShips.Width, 1, menu);
+                if (battleShips.GameType == GameType.HumanVsHuman || battleShips.Player1Turn)
+                {
+                    (x, userChoice, userSaved) = AskForUserInput("Enter X coordinate", battleShips.Width, 1, menu);
 
-                if (userChoice != null)
-                {
-                    break;
-                }
-                if (userSaved)
-                {
-                    SaveGame(battleShips);
-                    continue;
-                }
-                do
-                {
-                    (y, userChoice, userSaved) = AskForUserInput("Enter Y coordinate", battleShips.Height, 1, menu);
-                    if (!userSaved) continue;
-                    SaveGame(battleShips);
+                    if (userChoice != null)
+                    {
+                        break;
+                    }
+
+                    if (userSaved)
+                    {
+                        SaveGame(battleShips);
+                        continue;
+                    }
+
+                    do
+                    {
+                        (y, userChoice, userSaved) = AskForUserInput("Enter Y coordinate", battleShips.Height, 1, menu);
+                        if (!userSaved) continue;
+                        SaveGame(battleShips);
+                        BattleShipsUI.PrintBoard(battleShips, currentPlayer);
+                    } while (userSaved);
+
+                    if (userChoice != null)
+                    {
+                        break;
+                    }
+
+                    var shipHasBeenHit = battleShips.FireAShot(currentPlayer, x - 1, y - 1);
                     BattleShipsUI.PrintBoard(battleShips, currentPlayer);
-                } while (userSaved);
-
-                if (userChoice != null)
-                {
-                    break;
+                    DisplayShotResult(shipHasBeenHit);
                 }
-                
-                var shipHasBeenHit = battleShips.FireAShot(currentPlayer, x - 1, y - 1);
-                BattleShipsUI.PrintBoard(battleShips, currentPlayer);
-                DisplayShotResult(shipHasBeenHit);
+                else
+                {
+                    var shipHasBeenHit = battleShips.FireAiShot();
+                    BattleShipsUI.PrintBoard(battleShips, currentPlayer);
+                    DisplayShotResult(shipHasBeenHit);
+                }
 
                 if (battleShips.Player1.HasLost || battleShips.Player2.HasLost)
                 {
-                    var message = battleShips.Player1.HasLost ? "Player 2 has won the game!" : "Player 1 has won the game!";
+                    var message = battleShips.Player1.HasLost
+                        ? "Player 2 has won the game!"
+                        : "Player 1 has won the game!";
                     Console.WriteLine(message);
                     WaitForUserInput("Press any key to quit the game");
                     userChoice = "M";
                     break;
                 }
-                
-                var turnMessage = battleShips.Player1Turn ? "Player2's turn, enter any key to continue..." 
+
+                var turnMessage = battleShips.Player1Turn
+                    ? "Player2's turn, enter any key to continue..."
                     : "Player1's turn, enter any key to continue...";
                 WaitForUserInput(turnMessage);
                 battleShips.Player1Turn = !battleShips.Player1Turn;
-                
             } while (true);
 
             return userChoice;
@@ -373,6 +432,7 @@ namespace ConsoleApp
                 Console.WriteLine("A ship has been hit!");
                 return;
             }
+
             Console.WriteLine("The shot missed!");
         }
 
@@ -386,18 +446,18 @@ namespace ConsoleApp
                 Player1 = game.Player1,
                 Player1Turn = game.Player1Turn,
                 Player2 = game.Player2,
-                SaveName = saveName
+                SaveName = saveName,
+                GameType = game.GameType
             };
-            SaveTool.SaveGameToFile(battleShips);
             
+            SaveTool.SaveGameToFile(battleShips);
+
             using var ctx = new AppDbContext();
             var battleShipsSave = game.CreateBattleShipsSave(saveName);
             if (ctx.BattleShipsSaves.Any(e => e.SaveName == saveName))
             {
                 var save = ctx.BattleShipsSaves.FirstOrDefault(e => e.SaveName == saveName);
-                save!.Player1Turn = battleShipsSave.Player1Turn;
-                save.Player1JsonString = battleShipsSave.Player1JsonString;
-                save.Player2JsonString = battleShipsSave.Player2JsonString;
+                game.UpdateBattleShipsSave(save!);
                 ctx.Update(save);
             }
             else
@@ -405,7 +465,7 @@ namespace ConsoleApp
                 ctx.Add(battleShipsSave);
             }
             ctx.SaveChanges();
-            
+
             return "";
         }
 
@@ -423,45 +483,50 @@ namespace ConsoleApp
                     Console.WriteLine($"Save name has to be between {min} and {max} characters long.");
                     continue;
                 }
+
                 if (SaveTool.SaveGameExists(userInput) || ctx.BattleShipsSaves.Any(e => e.SaveName == userInput))
                 {
                     Console.WriteLine($"A save '{userInput}' already exists. Do you wish to overwrite it? (Y/N)");
                     var userAnswer = Console.ReadLine()?.Trim().ToUpper();
                     if (userAnswer != null && userAnswer.Equals("Y"))
-                    { 
+                    {
                         SaveTool.DeleteGameFromFile(userInput);
-                        break; 
+                        break;
                     }
+
                     continue;
                 }
+
                 break;
             }
+
             return userInput;
         }
-        
+
         private static void WaitForUserInput(string prompt)
         {
             Console.WriteLine($"{prompt}");
             Console.Write(">");
-            Console.ReadKey(); 
+            Console.ReadKey();
             Console.Clear();
         }
-        
+
         private static (int, string?, bool) AskForUserInput(string prompt, int max, int min, Menu menu)
         {
             do
             {
                 Console.WriteLine(prompt);
                 Console.Write(">");
-                
+
                 var consoleLine = Console.ReadLine()?.Trim().ToUpper();
-                
+
                 if (int.TryParse(consoleLine, out var userInput))
                 {
                     if (userInput > max)
                     {
                         Console.WriteLine($"Cannot be bigger than {max}");
-                    } else if (userInput < min)
+                    }
+                    else if (userInput < min)
                     {
                         Console.WriteLine($"Cannot be smaller than {min}");
                     }
@@ -478,11 +543,10 @@ namespace ConsoleApp
                 {
                     return (0, null, true);
                 }
-                else 
+                else
                 {
                     Console.WriteLine($"Input has to be a number between {min} and {max} or an exit value!");
                 }
-
             } while (true);
         }
     }

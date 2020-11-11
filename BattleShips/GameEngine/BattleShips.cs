@@ -17,28 +17,40 @@ namespace GameEngine
         public bool Player1Turn { get; set; } = true;
         public bool ShipsCanTouch { get; set; } = true;
         public bool GameFinished { get; set; } = false;
-
-        public BattleShips(int height, int width, string player1Json, string player2Json)
+        public GameType GameType { get; set; }
+        
+        public BattleShips(BattleShipsSave battleShipsSave)
         {
-            var player1 = JsonSerializer.Deserialize<Player>(player1Json);
-            var player2 = JsonSerializer.Deserialize<Player>(player2Json);
-            
-            Height = height;
-            Width = width;
-            Player1 = player1;
-            Player2 = player2;
+            Player1 = JsonSerializer.Deserialize<Player>(battleShipsSave.Player1JsonString);
+            Player2 = JsonSerializer.Deserialize<Player>(battleShipsSave.Player2JsonString);
+
+            Width = battleShipsSave.Width;
+            Height = battleShipsSave.Height;
+
+            GameType = battleShipsSave.GameType;
+            Player1Turn = battleShipsSave.Player1Turn;
         }
         
-        public BattleShips(int height, int width, Player player1, Player player2, bool fromSavedGame = false)
+        public BattleShips(BattleShipsSaveJson battleShipsSave)
+        {
+            Player1 = battleShipsSave.Player1!;
+            Player2 = battleShipsSave.Player2!;
+
+            Width = battleShipsSave.Width;
+            Height = battleShipsSave.Height;
+
+            GameType = battleShipsSave.GameType;
+            Player1Turn = battleShipsSave.Player1Turn;
+        }
+
+        public BattleShips(int height, int width, Player player1, Player player2)
         {
             Height = height;
             Width = width;
             Player1 = player1;
             Player2 = player2;
-            if (!fromSavedGame)
-            {
-                InitializeGameBoards();
-            }
+            
+            InitializeGameBoards();
         }
         
         public BattleShipsSave CreateBattleShipsSave(string saveName)
@@ -48,7 +60,7 @@ namespace GameEngine
             return new BattleShipsSave()
             {
                 Height = Height, Player1JsonString = player1Json, Player2JsonString = player2Json,
-                Width = Width, Player1Turn = Player1Turn, SaveName = saveName
+                Width = Width, Player1Turn = Player1Turn, SaveName = saveName, GameType = GameType
             };
         }
 
@@ -128,6 +140,31 @@ namespace GameEngine
         {
             return player.GameBoard.FirstOrDefault(e => e.Coordinates.Column == col && e.Coordinates.Row == row)
                    ?? throw new Exception("Panel not found!");
+        }
+
+        public bool FireAiShot()
+        {
+            Random random = new Random();
+            
+            var col = random.Next(0, Width);
+            var row = random.Next(0, Height);
+
+            var panel = GetPlayerFiringBoardPanel(Player2, col, row);
+            var playerGameBoardPanel = GetPlayerGameBoardPanel(Player1, col, row);
+
+            playerGameBoardPanel = GetPlayerGameBoardPanel(Player1, col, row);
+            
+            if (playerGameBoardPanel.IsOccupied)
+            {
+                panel.PanelState = PanelState.Hit;
+                playerGameBoardPanel.PanelState = PanelState.Hit;
+                var ship = Player1.Ships.FindShip(row, col);
+                ship.Hits++;
+                return true;
+            }
+            
+            panel.PanelState = PanelState.Miss;
+            return false;
         }
 
         public bool FireAShot(Player player, int col, int row)
