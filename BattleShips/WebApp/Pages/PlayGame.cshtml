@@ -111,8 +111,10 @@
                 {
                     <button class="btn btn-danger" type="submit">Fire!</button>
                 }
-                <a asp-page="PlayGame" class="btn btn-primary" asp-route-id="@Model.Id">Hide Boards</a>
-                
+                @if (Model.BattleShips.GameType == GameType.HumanVsHuman)
+                {
+                    <a asp-page="PlayGame" class="btn btn-primary" asp-route-id="@Model.Id">Hide Boards</a>
+                }
             </div>
         </form>
     </div>
