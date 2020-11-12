@@ -1,16 +1,16 @@
 ﻿@page
-@using System.Security.Cryptography.X509Certificates
-@using Domain
 @model WebApp.Pages.SavedGames
 
 @{
     ViewData["Title"] = "Load game";
 }
 
-<h1>Load Game</h1>
+<div class="container text-center">
+    <h1>Load Game</h1>
 
-@foreach (var save in Model.BattleShipsSaves)
-{
-    <a asp-page="/PlayGame" asp-route-id="@save.Id"><p>@save.SaveName</p></a>
-}
+    @foreach (var save in Model.BattleShipsSaves)
+    {
+        <a asp-page="/PlayGame" asp-route-id="@save.Id"><p>@Model.CreateDisplayName(save)</p></a>
+    }
+</div>
 

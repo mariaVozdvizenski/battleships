@@ -24,7 +24,34 @@
     {
         <h2 class="text-center">Player 2 Turn</h2>
     }
-    @if (Model.HideBoards == false)
+    
+    @if (Model.ContinueOnly)
+    {
+        @if (Model.ShotHitTheTarget)
+        {
+            @if (Model.BattleShips.Player1Turn)
+            {
+                <h2 class="text-center hit">Player 2 has hit a ship!</h2>
+            }
+            else
+            {
+                <h2 class="text-center hit">Player 1 has hit a ship!</h2>
+            }
+        }
+        else
+        {
+            @if (Model.BattleShips.Player1Turn)
+            {
+                <h2 class="text-center miss">Player 2 missed a shot!</h2>
+            }
+            else
+            {
+                <h2 class="text-center miss">Player 1 missed a shot!</h2>
+            }        
+        }
+    }
+
+    @if (Model.HideBoards == false && Model.ContinueOnly == false)
     {
        <div class="container text-center">
         <form method="post">
@@ -76,7 +103,7 @@
                 }
             </table>
             <div class="btn-group">
-                @if (Model.BattleShips.GameFinished)
+                @if (Model.BattleShips.GameFinished || Model.ContinueOnly)
                 {
                     <button class="btn btn-danger" type="submit" disabled>Fire!</button>
                 }
@@ -85,6 +112,7 @@
                     <button class="btn btn-danger" type="submit">Fire!</button>
                 }
                 <a asp-page="PlayGame" class="btn btn-primary" asp-route-id="@Model.Id">Hide Boards</a>
+                
             </div>
         </form>
     </div>
@@ -116,9 +144,13 @@
             </table>
         </div>
     }
-    else
+    else if (Model.HideBoards)
     {
         <p><a asp-page-handler="ShowBoards" class="btn btn-primary btn-lg btn-block" asp-route-id="@Model.Id">Show Boards</a></p>
+    }
+    else
+    {
+        <p><a asp-page="PlayGame" class="btn btn-primary btn-lg btn-block" asp-route-id="@Model.Id">Continue</a></p>
     }
 </div>
 

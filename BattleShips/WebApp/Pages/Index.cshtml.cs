@@ -21,9 +21,9 @@ namespace WebApp.Pages
         {
         }
         
-        public void OnPost(int num)
+        public void OnPost()
         {
-            Console.WriteLine(num);
+            
         }
     }
 }

@@ -9,14 +9,17 @@
     <div class="jumbotron">
         <div class="container">
             <h1 class="display-4">Welcome to BattleShips!</h1>
-            <p class="lead">Human vs Human - A classical game of Battleships between two human players. The ships are predetermined.
-                Human vs Human Custom - A custom game of Battleships between two human players. Each player chooses their ship sizes.</p>
+            <br>
+            <p class="lead"><b>Human vs Human</b> - A classical game of Battleships between two human players. The ships are predetermined.</p>
+            <p class="lead"><b>Human vs Human Custom</b> - A custom game of Battleships between two human players. Each player creates their ships.</p>
+            <p class="lead"><b>Human vs Computer</b> - A classical game of Battleships between a human and a computer. The ships are predetermined.</p>
         </div>
     </div>
 
     <div class="list-group">
         <a role="button" class="list-group-item list-group-item-action btn btn-outline-primary" asp-page="/NewGameHuman">New Game - Human vs Human</a>
         <a role="button" class="list-group-item list-group-item-action btn btn-outline-primary" asp-page="/NewGameHumanCustom">New Game - Human vs Human Custom</a>
+        <a role="button" class="list-group-item list-group-item-action btn btn-outline-primary" asp-page="/NewGameHumanVsAi">New Game - Human vs Computer</a>
         <a role="button" class="list-group-item list-group-item-action btn btn-outline-primary" asp-page="/SavedGames">Load Game</a>
     </div>
 </div>

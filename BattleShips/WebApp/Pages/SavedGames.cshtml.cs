@@ -21,5 +21,11 @@ namespace WebApp.Pages
         {
             BattleShipsSaves = _context.BattleShipsSaves.ToList();
         }
+
+        public string CreateDisplayName(BattleShipsSave save)
+        {
+            return $"{save.SaveName} - {save.Height}x{save.Width} - {(save.Player1Turn ? "Player 1" : "Player 2")} " +
+                   $"- {(save.GameType == GameType.HumanVsAi ? "Vs Computer" : "Vs Human")}";
+        }
     }
 }
