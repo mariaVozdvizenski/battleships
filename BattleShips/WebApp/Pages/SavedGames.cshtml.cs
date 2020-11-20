@@ -19,7 +19,7 @@ namespace WebApp.Pages
 
         public void OnGet()
         {
-            BattleShipsSaves = _context.BattleShipsSaves.ToList();
+            BattleShipsSaves = _context.BattleShipsSaves.OrderByDescending(e => e.Id).ToList();
         }
 
         public string CreateDisplayName(BattleShipsSave save)

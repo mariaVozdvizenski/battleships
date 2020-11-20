@@ -9,7 +9,8 @@ for details on configuring this project to bundle and minify static web assets. 
 }
 
 td.coordinates {
-  background-color: #b1c3e0;
+  background-color: #FFA34A;
+  border: transparent;
 }
 
 .input {
@@ -17,7 +18,7 @@ td.coordinates {
 }
 
 .jumbotron {
-  background: url("https://techcrunch.com/wp-content/uploads/2017/05/gettyimages-580833893.jpg");
+  background-color: #81D5EB;
   background-size: cover;
   height: 100%;
 }
@@ -28,11 +29,15 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+.bg-orange {
+  background-color: #FFA34A;
+}
+
 td {
   width: 36px;
   height: 36px;
-  border: 1px solid #6a7485;
-  background-color: #d8e0ed;
+  border: 1px solid #5A94A3;
+  background-color: #7DD4EB;
 }
 
 td.ship {
