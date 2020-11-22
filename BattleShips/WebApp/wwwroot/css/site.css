@@ -17,6 +17,10 @@ td.coordinates {
   color: ButtonFace;
 }
 
+.ship-hit {
+  color: #288FA8;
+}
+
 .jumbotron {
   background-color: #81D5EB;
   background-size: cover;

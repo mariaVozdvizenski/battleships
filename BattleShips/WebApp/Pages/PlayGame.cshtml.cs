@@ -33,18 +33,21 @@ namespace WebApp.Pages
         {
             var battleShipsSave = await _appDbContext.BattleShipsSaves.FirstOrDefaultAsync(e => e.Id == id);
             
-            if (battleShipsSave.GameType == GameType.HumanVsAi && !battleShipsSave.Player1Turn)
+            BattleShips = new BattleShips(battleShipsSave);
+            BattleShips.CheckIfGameHasFinished();
+
+            if (battleShipsSave.GameType == GameType.HumanVsAi && !battleShipsSave.Player1Turn && !BattleShips.GameFinished)
             {
                 return await OnPostComputerMoveAsync(id);
             }
+            
             Id = id;
-            BattleShips = new BattleShips(battleShipsSave);
             
             if (battleShipsSave.GameType == GameType.HumanVsHuman)
             {
                 HideBoards = true;
             }
-            BattleShips.CheckIfGameHasFinished();
+            
             return Page();
         }
 
@@ -113,22 +116,6 @@ namespace WebApp.Pages
             var coords = CoordinateString.Split(",");
             return (short.Parse(coords[0]), short.Parse(coords[1]));
         }
-
-        public string GetPanelState(Panel panel)
-        {
-            return panel.PanelState switch
-            {
-                PanelState.Empty => "",
-                PanelState.Ship => "S",
-                PanelState.Submarine => "U",
-                PanelState.Destroyer => "D",
-                PanelState.Cruiser => "C",
-                PanelState.Carrier => "A",
-                PanelState.BattleShip => "B",
-                PanelState.Hit => "X",
-                PanelState.Miss => "M",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
+        
     }
 }

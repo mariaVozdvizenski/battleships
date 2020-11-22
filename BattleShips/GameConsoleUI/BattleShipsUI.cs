@@ -9,11 +9,9 @@ namespace GameConsoleUI
         private const string VerticalSeparator = "|";
         private const string HorizontalSeparator = "-";
         private const string CenterSeparator = "+";
-        
+
         public static void PrintBoard(BattleShips game, Player player)
         {
-            //char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-            
             var topLine = "";
             for (int col = 0; col < game.Width; col++)
             {
@@ -33,13 +31,21 @@ namespace GameConsoleUI
                     }
                 }
             }
-            Console.WriteLine(topLine + "                  " + topLine);
-            
+
+            if (game.GameType != GameType.HumanVsAi || game.Player1Turn)
+            {
+                Console.WriteLine(topLine + "                  " + topLine);
+            }
+            else
+            {
+                Console.WriteLine(topLine);
+            }
+
             for (int row = 0; row < game.Height; row++)
             {
                 OutputBodyOfTheBoard(game, player, row);
             }
-            
+
             Console.WriteLine();
         }
 
@@ -50,8 +56,6 @@ namespace GameConsoleUI
             for (int col = 0; col < game.Width; col++)
             {
                 line = line + " " + game.GetPlayerFiringBoardPanel(player, col, row).Status + " ";
-
-                //line = line + " " + GetSingleState(game.GetPlayerFiringBoardPanel(player, col, row)) + " ";
                 
                 if (col < game.Width - 1)
                 {
@@ -69,24 +73,26 @@ namespace GameConsoleUI
             {
                 line += "                ";
             }
-            
-            
-            for (int col = 0; col < game.Width; col++)
+
+            if (game.GameType != GameType.HumanVsAi || game.Player1Turn)
             {
-                line = line + " " + game.GetPlayerGameBoardPanel(player, col, row).Status + " ";
-                
-                if (col < game.Width - 1)
+                for (int col = 0; col < game.Width; col++)
                 {
-                    line += VerticalSeparator;
+                    line = line + " " + game.GetPlayerGameBoardPanel(player, col, row).Status + " ";
+
+                    if (col < game.Width - 1)
+                    {
+                        line += VerticalSeparator;
+                    }
                 }
+
+                line += $" {row + 1}";
             }
             
-            line += $" {row + 1}";
-            
             //Console.WriteLine(line + $" {row + 1}");
-            
+
             Console.WriteLine(line);
-            
+
             if (row < game.Height - 1)
             {
                 line = "";
@@ -102,17 +108,19 @@ namespace GameConsoleUI
                 }
 
                 line += "                   ";
-                
-                for (int col = 0; col < game.Width; col++)
-                {
-                    line = line + HorizontalSeparator + HorizontalSeparator + HorizontalSeparator;
 
-                    if (col < game.Width - 1)
+                if (game.GameType != GameType.HumanVsAi || game.Player1Turn)
+                {
+                    for (int col = 0; col < game.Width; col++)
                     {
-                        line += CenterSeparator;
+                        line = line + HorizontalSeparator + HorizontalSeparator + HorizontalSeparator;
+
+                        if (col < game.Width - 1)
+                        {
+                            line += CenterSeparator;
+                        }
                     }
                 }
-
                 Console.WriteLine(line);
             }
         }

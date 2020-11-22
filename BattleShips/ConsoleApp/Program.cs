@@ -358,7 +358,10 @@ namespace ConsoleApp
             {
                 currentPlayer = battleShips.Player1Turn ? battleShips.Player1 : battleShips.Player2;
 
-                BattleShipsUI.PrintBoard(battleShips, currentPlayer);
+                if (battleShips.GameType == GameType.HumanVsHuman || battleShips.Player1Turn)
+                {
+                    BattleShipsUI.PrintBoard(battleShips, currentPlayer);
+                }
 
                 menu.DisplayCustomMenuItems();
                 menu.DisplayPredefinedMenuItems();

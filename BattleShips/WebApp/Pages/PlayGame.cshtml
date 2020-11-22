@@ -78,7 +78,7 @@
                                             }
                                             else if (Model.BattleShips.GetPlayerFiringBoardPanel(Model.BattleShips.Player1, col, row).PanelState == PanelState.Hit)
                                             {
-                                                <td>X</td>
+                                                <td class="ship-hit">X</td>
                                             }
                                             else
                                             {
@@ -93,7 +93,7 @@
                                             }
                                             else if (Model.BattleShips.GetPlayerFiringBoardPanel(Model.BattleShips.Player2, col, row).PanelState == PanelState.Hit)
                                             {
-                                                <td>X</td>
+                                                <td class="ship-hit">X</td>
                                             }
                                             else
                                             {
@@ -141,12 +141,27 @@
                                     {
                                         if (Model.BattleShips.Player1Turn)
                                         {
-                                            <td>@Model.GetPanelState(Model.BattleShips.GetPlayerGameBoardPanel(Model.BattleShips.Player1, col, row))</td>
+                                            var gameBoardPanel = Model.BattleShips.GetPlayerGameBoardPanel(Model.BattleShips.Player1, col, row);
+                                            if (gameBoardPanel.PanelState == PanelState.Hit)
+                                            {
+                                                <td class="ship-hit">@gameBoardPanel.Status</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@gameBoardPanel.Status</td>
+                                            }
                                         }
                                         else
                                         {
-                                            <td>@Model.GetPanelState(Model.BattleShips.GetPlayerGameBoardPanel(Model.BattleShips.Player2, col, row))</td>
-                                        }
+                                            var gameBoardPanel = Model.BattleShips.GetPlayerGameBoardPanel(Model.BattleShips.Player2, col, row);
+                                            if (gameBoardPanel.PanelState == PanelState.Hit)
+                                            {
+                                                <td class="ship-hit">@gameBoardPanel.Status</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@gameBoardPanel.Status</td>
+                                            }                                        }
                                     }
                                     <td class="coordinates">@(row + 1)</td>
                                 </tr>
