@@ -11,10 +11,12 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-row">
             <div class="col">
+                <label asp-for="Height">Height</label>
                 <input asp-for="Height" class="form-control" placeholder="Height" required>
                 <span asp-validation-for="Height" class="text-danger"></span>
             </div>
             <div class="col">
+                <label asp-for="Width">Width</label>
                 <input asp-for="Width" class="form-control" placeholder="Width" required>
                 <span asp-validation-for="Width" class="text-danger"></span>
             </div>

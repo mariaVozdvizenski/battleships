@@ -82,7 +82,9 @@
                                             }
                                             else
                                             {
-                                                <td><input type="radio" asp-for="CoordinateString" value="@row,@col" required></td>
+                                                <td>
+                                                    <input type="radio" asp-for="CoordinateString" value="@row,@col" id="@row,@col" required>
+                                                </td>
                                             }
                                         }
                                         else

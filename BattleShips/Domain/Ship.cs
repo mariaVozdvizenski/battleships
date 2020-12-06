@@ -10,7 +10,10 @@ namespace Domain
         public int StartCol { get; set; }
         public int EndCol { get; set; }
         public ShipOrientation Orientation { get; set; }
+        
+        [Required(ErrorMessage = "Ship name is required.")]
         public string Name { get; set; } = null!;
+        
         [Range(1, 5)]
         public int Width { get; set; }
         public int Hits { get; set; }

@@ -20,13 +20,9 @@ namespace WebApp.Pages
         [BindProperty]
         public Player Player2 { get; set; } = new Player();
 
-        [Range(10, 20)]
-        [BindProperty]
-        public int Height { get; set; }
-        
-        [Range(10, 20)]
-        [BindProperty]
-        public int Width { get; set; }
+        [Range(10, 20)] [BindProperty] public int Height { get; set; } = 10;
+
+        [Range(10, 20)] [BindProperty] public int Width { get; set; } = 10;
         
         [MaxLength(50)]
         [MinLength(1)]
